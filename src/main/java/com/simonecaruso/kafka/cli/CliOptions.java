@@ -17,6 +17,7 @@ public class CliOptions {
     private boolean help = false;
     private String level = "info";
     private String operationlog = "stdout.log";
+    private String zookeeperhosts = "localhost";
 
     @Option(name = "l", longName = "loglevel", description = "")
     public void setLogLevel(String level) {
@@ -31,6 +32,15 @@ public class CliOptions {
     public void setTopic(String topic){ this.topic = topic; }
 
     public String getTopic(){ return this.topic; }
+
+    @Option(name = "z", longName = "zk", description = "")
+    public void setZookeeperhosts(String zookeeperhosts) {
+        this.zookeeperhosts = zookeeperhosts;
+    }
+
+    public String getZookeeperhosts() {
+        return zookeeperhosts;
+    }
 
     @Option(name = "h", longName = "help", description = "")
     public void setHelp() {
