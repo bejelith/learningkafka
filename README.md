@@ -16,4 +16,6 @@ or
 `./run.sh <options> [arguments]`
 
 ### Options
-- asd
+- **-h** print help()
+- **-n --topic** topic name
+- **-l --loglevel** loglevel [fatal,severe,info,debug,trace]
