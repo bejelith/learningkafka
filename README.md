@@ -11,9 +11,9 @@ CLI tool to listen on a kafka topic, also spawns a thread to generate random mes
 `$ mvn package`
 
 ## Launch 
-`$ java -jar target/kafka-test.jar <options> [argument]`  
+`$ java -jar target/kafka-test.jar <options> [kafkahost:port] [...]`  
 or  
-`./run.sh <options> [arguments]`
+`./run.sh <options> [kafkahost:port] [...]`
 
 ### Options
 - **-h** print help()
