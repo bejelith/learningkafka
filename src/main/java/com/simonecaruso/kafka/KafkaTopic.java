@@ -13,16 +13,24 @@ import java.util.List;
 public class KafkaTopic {
 
     private final Map<String, Integer> map;
-    private final String topic;
+    private final String topicName;
 
-    public KafkaTopic(String topic, Integer streams){
-        this.topic = topic;
+    public KafkaTopic(String topicName, Integer streams){
+        this.topicName = topicName;
         map = new HashMap<>();
-        map.put(topic, streams);
+        map.put(topicName, streams);
     }
 
     public List<KafkaStream<byte[], byte[]>> getConsumerStreams(ConsumerConnector consumer){
-        return consumer.createMessageStreams(map).get(topic);
+        try {
+            return consumer.createMessageStreams(map).get(topicName);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
+    public String getTopicName() {
+        return topicName;
+    }
 }
