@@ -27,7 +27,7 @@ public class CliOptions {
         return level;
     }
 
-    @Option(name = "n", longName = "topicName", description = "")
+    @Option(name = "n", longName = "topic", description = "")
     public void setTopic(String topic){ this.topic = topic; }
 
     public String getTopic(){ return this.topic; }
