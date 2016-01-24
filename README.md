@@ -8,14 +8,17 @@ CLI tool to listen on a kafka topic, also spawns a thread to generate random mes
 3. Kafka
 
 ## Build
+`$ mvn assembly:single`
+
+## Build and run integration test
 `$ mvn package`
 
 ## Launch 
 `$ java -jar target/kafka-test.jar <options> [kafkahost:port] [...]`  
-or  
-`./run.sh <options> [kafkahost:port] [...]`
+
 
 ### Options
 - **-h** print help()
-- **-n --topic** topic name
-- **-l --loglevel** loglevel [fatal,severe,info,debug,trace]
+- **-n --topic** [topic name]
+- **-l --loglevel** [loglevel] set log level (fatal,severe,info,debug,trace)
+- **-z --zk** [ZK connect string] ZK connection string
