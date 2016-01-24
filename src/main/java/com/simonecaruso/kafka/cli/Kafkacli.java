@@ -5,9 +5,11 @@ package com.simonecaruso.kafka.cli;
 
 import com.simonecaruso.kafka.KafkaTopic;
 import com.simonecaruso.kafka.cli.CliOptions;
+import com.simonecaruso.kafka.producer.KafkaProducerBuilder;
 import com.simonecaruso.kafka.worker.ConsumerWorker;
 import com.simonecaruso.kafka.worker.ProducerWorker;
 import kafka.javaapi.consumer.ConsumerConnector;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.log4j.*;
 import org.cyclopsgroup.jcli.ArgumentProcessor;
 import org.cyclopsgroup.jcli.GnuParser;
@@ -31,7 +33,7 @@ public class Kafkacli {
     public static void main(String args[]){
         //process cli arguments
         parseArguments(args);
-        setupLogger(clioptions.getLogLevel());
+        setupLogger();
 
         //Create the topic instance
         KafkaTopic topic = new KafkaTopic(clioptions.getTopic(), 1);
@@ -41,11 +43,19 @@ public class Kafkacli {
                 .withBootstrapServers(clioptions.getArguments())
                 .withZk(clioptions.getZookeeperhosts())
                 .build();
+        KafkaProducer<String, String> producer = new KafkaProducerBuilder()
+                .withServers(clioptions.getArguments())
+                .withClientID("producer1")
+                .build();
 
         //Produce random stuff
         ExecutorService executor = Executors.newCachedThreadPool();
-        executor.execute(new ProducerWorker(clioptions));
-
+        executor.execute(new ProducerWorker(producer, topic));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //Consume the random stuff
         executor.execute(new ConsumerWorker(consumerConnector, topic));
         executor.shutdown();
@@ -55,7 +65,7 @@ public class Kafkacli {
 
             }
         } catch (InterruptedException e) {
-            System.out.println("Termination signal catched.");
+            log.info("Termination signal catched.");
         }
         System.out.println("Exit.");
     }
@@ -72,11 +82,13 @@ public class Kafkacli {
         }
     }
 
-    private static void setupLogger(String level){
+    private static void setupLogger(){
         Appender console = new ConsoleAppender(new PatternLayout("%d %-5p [%t]: %m%n"));
         Logger root = LogManager.getRootLogger();
-        root.setLevel(Level.ERROR);
+        root.setLevel(Level.toLevel(clioptions.getLogLevel()));
         log.addAppender(console);
+        log.info("Log level " + root.getLevel());
+
     }
 
 }
