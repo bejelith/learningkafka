@@ -19,19 +19,21 @@ public class ConsumerWorker implements Runnable {
     private ConsumerConnector consumer;
     private boolean run = true;
     private int processedmessages = 0;
+    KafkaStream<byte[], byte[]> stream;
 
     public ConsumerWorker(ConsumerConnector consumer, KafkaTopic topic) {
         this.consumer = consumer;
         this.topic = topic;
+
     }
 
     public void run() {
         Thread.currentThread().setName("ConsumerWorker");
         log.trace("Consumer started.");
-        KafkaStream<byte[], byte[]> stream = topic.getConsumerStreams(consumer).get(0);
 
-        ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
         try {
+            stream = topic.getConsumerStreams(consumer).get(0);
+            ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
             while (run && iterator.hasNext()) {
                 processedmessages++;
                 MessageAndMetadata<byte[], byte[]> message = iterator.next();
