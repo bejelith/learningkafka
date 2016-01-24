@@ -5,14 +5,16 @@ package com.simonecaruso.kafka.worker;
 
 import com.simonecaruso.kafka.KafkaTopic;
 import kafka.consumer.ConsumerIterator;
+import kafka.consumer.ConsumerTimeoutException;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.message.MessageAndMetadata;
-
-import java.util.List;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ConsumerWorker implements Runnable {
 
+    private final Logger log = LogManager.getLogger(this.getClass());
     private final KafkaTopic topic;
     private ConsumerConnector consumer;
     private boolean run = true;
@@ -24,23 +26,29 @@ public class ConsumerWorker implements Runnable {
     }
 
     public void run() {
-        System.out.println("Consumer started.");//TODO write loggin class
-        List<KafkaStream<byte[], byte[]>> streams = topic.getConsumerStreams(consumer);
-        for (KafkaStream<byte[], byte[]> stream : streams) {
-            ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
+        Thread.currentThread().setName("ConsumerWorker");
+        log.trace("Consumer started.");
+        KafkaStream<byte[], byte[]> stream = topic.getConsumerStreams(consumer).get(0);
+
+        ConsumerIterator<byte[], byte[]> iterator = stream.iterator();
+        try {
             while (run && iterator.hasNext()) {
                 processedmessages++;
                 MessageAndMetadata<byte[], byte[]> message = iterator.next();
-                System.out.println("Receved: " + new String(message.key()) + ": " + new String(message.message()));
 
+                log.info("Message offset: " + message.offset() + ": " + message.message());
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
-                    System.out.println("Interrupting");
+                    log.info("Interrupting");
                     return;
                 }
             }
+        } catch (ConsumerTimeoutException e) {
+            log.error(e);
         }
+        log.trace("Consumer shut down.");
+        consumer.shutdown();
     }
 
     public void exit() {

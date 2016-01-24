@@ -11,12 +11,12 @@ import java.util.Map;
 /**
  * Created by simone.caruso on 23/01/2016.
  */
-public class ProducerBuilder {
+public class KafkaProducerBuilder {
 
     Map<String, Object> props = new HashMap<>();
     List<String> servers = new LinkedList<>();
 
-    public ProducerBuilder(){
+    public KafkaProducerBuilder(){
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
@@ -26,17 +26,17 @@ public class ProducerBuilder {
         props.put(ProducerConfig.RETRIES_CONFIG, "1");
     }
 
-    public ProducerBuilder withServers(List<String> servers){
+    public KafkaProducerBuilder withServers(List<String> servers){
         this.servers = servers;
         return this;
     }
 
-    public ProducerBuilder addServer(String server){
+    public KafkaProducerBuilder addServer(String server){
         servers.add(server);
         return this;
     }
 
-    public ProducerBuilder withClientID(String clientID){
+    public KafkaProducerBuilder withClientID(String clientID){
         props.put(ProducerConfig.CLIENT_ID_CONFIG, clientID);
         return this;
     }
