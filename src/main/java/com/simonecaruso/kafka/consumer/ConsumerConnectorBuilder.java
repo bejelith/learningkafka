@@ -17,6 +17,7 @@ public class ConsumerConnectorBuilder {
     private String topic = "testtopic";
     private String gropupid = "group1";
     private String sessionTimeout = "100";
+    private String commitdelay ="50";
 
     public ConsumerConnectorBuilder() {
 
@@ -48,12 +49,18 @@ public class ConsumerConnectorBuilder {
         return this;
     }
 
+    public ConsumerConnectorBuilder withSessionTimeout(String sessionTimeout){
+        this.sessionTimeout = sessionTimeout;
+        return this;
+    }
+
     public ConsumerConnector build() {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, StringUtils.join(boostrapservers.iterator(), ','));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, gropupid);
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS, sessionTimeout);
         props.put("zookeeper.connect", zkconnect);
+        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, commitdelay);
         return kafka.consumer.Consumer.createJavaConsumerConnector(new kafka.consumer.ConsumerConfig(props));
     }
 
